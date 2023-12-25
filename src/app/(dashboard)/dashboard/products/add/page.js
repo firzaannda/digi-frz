@@ -1,3 +1,5 @@
+import { CreateProducts } from "@/components/dashboard/components/CreateProducts";
+
 export default function Page() {
-  return <div>page</div>;
+  return <CreateProducts />;
 }

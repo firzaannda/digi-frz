@@ -2,6 +2,8 @@ import { uploadFile } from "@/lib/uploadFile";
 import prisma from "@/utils/prisma";
 import { NextResponse } from "next/server";
 import slugify from "slugify";
+import { verify } from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 export async function GET() {
   try {
@@ -34,7 +36,12 @@ export async function POST(request) {
   const featuredImage = formData.get("featuredImage");
   const images = formData.getAll("images");
   const category = formData.get("category");
-  const userId = formData.get("userId");
+  // const userId = formData.get("userId");
+
+  const cookieStore = cookies();
+  const token = cookieStore.get("token").value;
+  const decoded = verify(token, process.env.JWT_SECRET);
+  const userId = decoded.id;
 
   let productId = "";
   //
