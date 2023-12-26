@@ -5,9 +5,32 @@ import slugify from "slugify";
 import { verify } from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-export async function GET() {
+export async function GET(request) {
+  const searchParams = request.nextUrl.searchParams;
+  const slug = searchParams.get("slug");
+
+  let products = null;
+
   try {
-    const allProducts = await prisma.product.findMany({
+    if (slug) {
+      const product = await prisma.product.findUnique({
+        where: {
+          slug,
+        },
+        include: {
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      });
+      return NextResponse.json({
+        data: product,
+        message: "Product fetched successfully",
+      });
+    }
+    products = await prisma.product.findMany({
       include: {
         user: {
           select: {
@@ -17,7 +40,7 @@ export async function GET() {
       },
     });
     return NextResponse.json({
-      data: allProducts,
+      data: products,
       message: "All Products Fetched Successfully!",
     });
   } catch (error) {
